@@ -1,19 +1,19 @@
 import React, { useState } from 'react'
 
-import { ContactForm } from './components/Form'
+import { ContactForm, formInitialValues } from './components/Form'
 import { ConfirmationModal } from './ConfirmationModal'
 
 export const CreateContactForm = () => {
+  const [containerFormValues, setContainerFormValues] = useState(formInitialValues)
   const [modalVisible, setModalVisible] = useState(false)
 
   return (
     <>
-      <h1>CreateContactForm</h1>
-      <ContactForm handleModalOpen={setModalVisible} />
+      <ContactForm handleModalOpen={setModalVisible} updateContainerFormState={setContainerFormValues} />
       <ConfirmationModal
         modalVisible={modalVisible}
         handleClose={setModalVisible}
-        confirmedFormData={{ test: 'test values' }}
+        confirmedFormData={containerFormValues}
       />
     </>
   )

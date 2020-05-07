@@ -4,6 +4,7 @@ import * as Yup from 'yup'
 
 type ContactFormProps = {
   handleModalOpen: (modalVisible: boolean) => void
+  updateContainerFormState: (formValues: any) => void
 }
 
 const titles = ['Mr', 'Mrs', 'Ms', 'Mx', 'Dr']
@@ -42,7 +43,7 @@ const ValidationSchema = Yup.object().shape({
   description: Yup.string().min(1).max(1000), //.required(),
 })
 
-const formInitialValues = {
+export const formInitialValues = {
   title: 'None',
   firstName: '',
   lastName: '',
@@ -60,7 +61,7 @@ const formInitialValues = {
   description: '',
 }
 
-export const ContactForm = ({ handleModalOpen }: ContactFormProps) => (
+export const ContactForm = ({ updateContainerFormState, handleModalOpen }: ContactFormProps) => (
   <Formik
     initialValues={formInitialValues}
     validationSchema={ValidationSchema}
@@ -69,6 +70,7 @@ export const ContactForm = ({ handleModalOpen }: ContactFormProps) => (
 
       setTimeout(() => {
         console.log('Successfully submitted form', JSON.stringify(values, null, 2))
+        updateContainerFormState(values)
         resetForm()
         setSubmitting(false)
         handleModalOpen(true)
@@ -76,225 +78,226 @@ export const ContactForm = ({ handleModalOpen }: ContactFormProps) => (
     }}
   >
     {({ values, errors, touched, handleChange, handleBlur, handleReset, isSubmitting }) => (
-      <Form>
-        {/* TODO delete me later */} {JSON.stringify(values, null, 2)}
-        <section>
-          <h3>Contact Information</h3>
-          <div>
-            <select
-              name="title"
-              id="title"
+      <>
+        <div className="form-toolbar">
+          <h1 className="form-toolbar-title">Create Contact</h1>
+          <button onClick={handleReset} disabled={isSubmitting} className="form-toolbar-button-cancel">
+            Cancel
+          </button>
+          <button form="create-contact-form" type="submit" disabled={isSubmitting} className="form-toolbar-button-save">
+            Save
+          </button>
+        </div>
+        <Form id="create-contact-form">
+          <section>
+            <h3>Contact Information</h3>
+            <div>
+              <select
+                name="title"
+                id="title"
+                onChange={handleChange}
+                value={values.title}
+                onBlur={handleBlur}
+                className={touched.title && errors.title ? 'has-error' : undefined}
+              >
+                <option disabled>None</option>
+                {titles.map((title) => (
+                  <option value={title} key={title}>
+                    {title}
+                  </option>
+                ))}
+              </select>
+              <label htmlFor="firstName">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                id="firstName"
+                placeholder="John"
+                onChange={handleChange}
+                value={values.firstName}
+                onBlur={handleBlur}
+                className={touched.title && errors.title ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              <label htmlFor="lastName">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                id="lastName"
+                placeholder="Smith"
+                onChange={handleChange}
+                value={values.lastName}
+                onBlur={handleBlur}
+                className={touched.lastName && errors.lastName ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              <label htmlFor="accountName">Account Name</label>
+              <input
+                type="text"
+                name="accountName"
+                id="accountName"
+                placeholder="John's Joinery"
+                onChange={handleChange}
+                value={values.accountName}
+                onBlur={handleBlur}
+                className={touched.accountName && errors.accountName ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              <label htmlFor="companyName">Company Name (optional)</label>
+              <input
+                type="text"
+                name="companyName"
+                id="companyName"
+                placeholder="John's Joinery"
+                onChange={handleChange}
+                value={values.companyName}
+                onBlur={handleBlur}
+                className={touched.companyName && errors.companyName ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              {/* TODO2 phone & fax with spaces, see mock up */}
+              <label htmlFor="phone">Phone</label>
+              <input
+                type="tel"
+                pattern="[0-9]+"
+                name="phone"
+                id="phone"
+                placeholder="0212345678"
+                onChange={handleChange}
+                value={values.phone}
+                onBlur={handleBlur}
+                className={touched.phone && errors.phone ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              <label htmlFor="fax">Fax (optional)</label>
+              <input
+                type="tel"
+                pattern="[0-9]+"
+                name="fax"
+                id="fax"
+                placeholder="0287654321"
+                onChange={handleChange}
+                value={values.fax}
+                onBlur={handleBlur}
+                className={touched.fax && errors.fax ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              <label htmlFor="jobTitle">Title (optional)</label>
+              <input
+                type="text"
+                name="jobTitle"
+                id="jobTitle"
+                placeholder="Owner"
+                onChange={handleChange}
+                value={values.jobTitle}
+                onBlur={handleBlur}
+                className={touched.jobTitle && errors.jobTitle ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="samle@email.com"
+                onChange={handleChange}
+                value={values.email}
+                onBlur={handleBlur}
+                className={touched.email && errors.email ? 'has-error' : undefined}
+              />
+            </div>
+            <label htmlFor="emailOptOut">Email Opt Out</label>
+            <input
+              type="checkbox"
+              id="emailOptOut"
+              name="emailOptOut"
               onChange={handleChange}
-              value={values.title}
+              checked={values.emailOptOut}
               onBlur={handleBlur}
-              className={touched.title && errors.title ? 'has-error' : undefined}
+            />
+          </section>
+          <section>
+            <h3>Address Information</h3>
+            <div>
+              <label htmlFor="streetNumberAndStreet">Street No. & Street</label>
+              <input
+                type="text"
+                name="streetNumberAndStreet"
+                id="streetNumberAndStreet"
+                placeholder="1, Elizabeth Street"
+                onChange={handleChange}
+                value={values.streetNumberAndStreet}
+                onBlur={handleBlur}
+                className={touched.streetNumberAndStreet && errors.streetNumberAndStreet ? 'has-error' : undefined}
+              />
+            </div>
+            <div>
+              <label htmlFor="city">City</label>
+              <input
+                type="text"
+                name="city"
+                id="city"
+                placeholder="Sydney"
+                onChange={handleChange}
+                value={values.city}
+                onBlur={handleBlur}
+                className={touched.city && errors.city ? 'has-error' : undefined}
+              />
+            </div>
+            <select
+              name="state"
+              id="state"
+              onChange={handleChange}
+              value={values.state}
+              onBlur={handleBlur}
+              className={touched.state && errors.state ? 'has-error' : undefined}
             >
-              <option disabled>None</option>
-              {titles.map((title) => (
-                <option value={title} key={title}>
-                  {title}
+              {/* TODO2: search Icon & auto complete */}
+              {australianStates.map((state) => (
+                <option value={state} key={state}>
+                  {state}
                 </option>
               ))}
             </select>
-            <label htmlFor="firstName">First Name</label>
-            <input
-              type="text"
-              name="firstName"
-              id="firstName"
-              placeholder="John"
-              onChange={handleChange}
-              value={values.firstName}
-              onBlur={handleBlur}
-              className={touched.title && errors.title ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            <label htmlFor="lastName">Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              id="lastName"
-              placeholder="Smith"
-              onChange={handleChange}
-              value={values.lastName}
-              onBlur={handleBlur}
-              className={touched.lastName && errors.lastName ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            <label htmlFor="accountName">Account Name</label>
-            <input
-              type="text"
-              name="accountName"
-              id="accountName"
-              placeholder="John's Joinery"
-              onChange={handleChange}
-              value={values.accountName}
-              onBlur={handleBlur}
-              className={touched.accountName && errors.accountName ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            <label htmlFor="companyName">Company Name (optional)</label>
-            <input
-              type="text"
-              name="companyName"
-              id="companyName"
-              placeholder="John's Joinery"
-              onChange={handleChange}
-              value={values.companyName}
-              onBlur={handleBlur}
-              className={touched.companyName && errors.companyName ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            {/* TODO2 phone & fax with spaces, see mock up */}
-            <label htmlFor="phone">Phone</label>
-            <input
-              type="tel"
-              pattern="[0-9]+"
-              name="phone"
-              id="phone"
-              placeholder="0212345678"
-              onChange={handleChange}
-              value={values.phone}
-              onBlur={handleBlur}
-              className={touched.phone && errors.phone ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            <label htmlFor="fax">Fax (optional)</label>
-            <input
-              type="tel"
-              pattern="[0-9]+"
-              name="fax"
-              id="fax"
-              placeholder="0287654321"
-              onChange={handleChange}
-              value={values.fax}
-              onBlur={handleBlur}
-              className={touched.fax && errors.fax ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            <label htmlFor="jobTitle">Title (optional)</label>
-            <input
-              type="text"
-              name="jobTitle"
-              id="jobTitle"
-              placeholder="Owner"
-              onChange={handleChange}
-              value={values.jobTitle}
-              onBlur={handleBlur}
-              className={touched.jobTitle && errors.jobTitle ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="samle@email.com"
-              onChange={handleChange}
-              value={values.email}
-              onBlur={handleBlur}
-              className={touched.email && errors.email ? 'has-error' : undefined}
-            />
-          </div>
-          <label htmlFor="emailOptOut">Email Opt Out</label>
-          <input
-            type="checkbox"
-            id="emailOptOut"
-            name="emailOptOut"
-            onChange={handleChange}
-            checked={values.emailOptOut}
-            onBlur={handleBlur}
-          />
-        </section>
-        <section>
-          <h3>Address Information</h3>
-          <div>
-            <label htmlFor="streetNumberAndStreet">Street No. & Street</label>
-            <input
-              type="text"
-              name="streetNumberAndStreet"
-              id="streetNumberAndStreet"
-              placeholder="1, Elizabeth Street"
-              onChange={handleChange}
-              value={values.streetNumberAndStreet}
-              onBlur={handleBlur}
-              className={touched.streetNumberAndStreet && errors.streetNumberAndStreet ? 'has-error' : undefined}
-            />
-          </div>
-          <div>
-            <label htmlFor="city">City</label>
-            <input
-              type="text"
-              name="city"
-              id="city"
-              placeholder="Sydney"
-              onChange={handleChange}
-              value={values.city}
-              onBlur={handleBlur}
-              className={touched.city && errors.city ? 'has-error' : undefined}
-            />
-          </div>
-          <select
-            name="state"
-            id="state"
-            onChange={handleChange}
-            value={values.state}
-            onBlur={handleBlur}
-            className={touched.state && errors.state ? 'has-error' : undefined}
-          >
-            {/* TODO2: search Icon & auto complete */}
-            {australianStates.map((state) => (
-              <option value={state} key={state}>
-                {state}
-              </option>
-            ))}
-          </select>
-          <div>
-            <label htmlFor="postcode">Postcode</label>
-            <input
-              type="text"
-              pattern="[0-9]+"
-              name="postcode"
-              id="postcode"
-              placeholder="2000"
-              onChange={handleChange}
-              value={values.postcode}
-              onBlur={handleBlur}
-              className={touched.postcode && errors.postcode ? 'has-error' : undefined}
-            />
-          </div>
-        </section>
-        <section>
-          <h3>Description Information</h3>
-          <div>
-            <label htmlFor="description">Description</label>
-            <input
-              type="textarea"
-              name="description"
-              id="description"
-              onChange={handleChange}
-              value={values.description}
-              onBlur={handleBlur}
-              className={touched.description && errors.description ? 'has-error' : undefined}
-            />
-          </div>
-        </section>
-        <div>
-          {/* TODO1 move buttons to top toolbar */}
-          <button type="submit" disabled={isSubmitting}>
-            Save
-          </button>
-          <button onClick={handleReset} disabled={isSubmitting}>
-            Reset
-          </button>
-        </div>
-      </Form>
+            <div>
+              <label htmlFor="postcode">Postcode</label>
+              <input
+                type="text"
+                pattern="[0-9]+"
+                name="postcode"
+                id="postcode"
+                placeholder="2000"
+                onChange={handleChange}
+                value={values.postcode}
+                onBlur={handleBlur}
+                className={touched.postcode && errors.postcode ? 'has-error' : undefined}
+              />
+            </div>
+          </section>
+          <section>
+            <h3>Description Information</h3>
+            <div>
+              <label htmlFor="description">Description</label>
+              <input
+                type="textarea"
+                name="description"
+                id="description"
+                onChange={handleChange}
+                value={values.description}
+                onBlur={handleBlur}
+                className={touched.description && errors.description ? 'has-error' : undefined}
+              />
+            </div>
+          </section>
+        </Form>
+      </>
     )}
   </Formik>
 )

@@ -15,8 +15,8 @@ Hierarchy:
 - App
   - Header
   - CreateContactForm (formState, onSubmit, modalVisible, modalClick)
-    - Toolbar
     - Form
+      - Toolbar
       - Inputs
     - Modal
   - Footer

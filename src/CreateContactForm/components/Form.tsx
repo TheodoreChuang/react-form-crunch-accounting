@@ -2,6 +2,10 @@ import React from 'react'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 
+type ContactFormProps = {
+  handleModalOpen: (modalVisible: boolean) => void
+}
+
 const titles = ['Mr', 'Mrs', 'Ms', 'Mx', 'Dr']
 
 const australianStates = [
@@ -56,7 +60,7 @@ const formInitialValues = {
   description: '',
 }
 
-export const ContactForm = () => (
+export const ContactForm = ({ handleModalOpen }: ContactFormProps) => (
   <Formik
     initialValues={formInitialValues}
     validationSchema={ValidationSchema}
@@ -67,6 +71,7 @@ export const ContactForm = () => (
         console.log('Successfully submitted form', JSON.stringify(values, null, 2))
         resetForm()
         setSubmitting(false)
+        handleModalOpen(true)
       }, 1000)
     }}
   >

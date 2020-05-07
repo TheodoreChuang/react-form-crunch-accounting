@@ -2,12 +2,11 @@
 
 User Story: As an accountant, I would like to record the details of a new client so that I quickly retrieve those details and contact them when required.
 
-### App Architecture
+## App
 
-React
-Material UI
-Responsive
-Unit Test (Jest, react-testing-library)
+- built with React
+- needs to be responsive
+  Unit Test (Jest, react-testing-library)
 
 ### Components:
 
@@ -62,6 +61,8 @@ Can close modal
 ## Available Scripts
 
 In the project directory, you can run:
+
+First time? `npm install`
 
 ### `npm start`
 

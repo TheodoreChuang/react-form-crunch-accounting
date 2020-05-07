@@ -1,8 +1,8 @@
 import React from 'react'
-import { Formik } from 'formik'
+import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
 
-const titles = ['None', 'Mr', 'Mrs', 'Ms', 'Mx', 'Dr']
+const titles = ['Mr', 'Mrs', 'Ms', 'Mx', 'Dr']
 
 const australianStates = [
   'New South Wales',
@@ -18,8 +18,8 @@ const ValidationSchema = Yup.object().shape({
   firstName: Yup.string().min(1).max(255), //.required(),
   lastName: Yup.string().min(1).max(255), //.required(),
   accountName: Yup.string().min(1).max(255), //.required(),
-  companyName: Yup.string().min(1).max(255),
-  // TODO check valid phone formats + add regex
+  companyName: Yup.string().max(255),
+  // TODO2 check valid phone formats + add regex?
   phone: Yup.string()
     .min(10)
     .max(12)
@@ -34,12 +34,12 @@ const ValidationSchema = Yup.object().shape({
   streetNumberAndStreet: Yup.string().min(1).max(255), //.required(),
   city: Yup.string().min(1).max(255), //.required(),
   state: Yup.mixed().oneOf(australianStates), //.required(),
-  postcode: Yup.number().min(4).max(4),
+  postcode: Yup.number().min(4).max(4), //.required(),
   description: Yup.string().min(1).max(1000), //.required(),
 })
 
 const formInitialValues = {
-  title: titles[0],
+  title: 'None',
   firstName: '',
   lastName: '',
   accountName: '',
@@ -48,7 +48,7 @@ const formInitialValues = {
   fax: '',
   jobTitle: '',
   email: '',
-  emailOptOut: true,
+  emailOptOut: false,
   streetNumberAndStreet: '',
   city: '',
   state: '',
@@ -56,55 +56,146 @@ const formInitialValues = {
   description: '',
 }
 
-export const Form = () => (
+export const ContactForm = () => (
   <Formik
     initialValues={formInitialValues}
     validationSchema={ValidationSchema}
-    onSubmit={(values) => {
-      console.log(values)
+    onSubmit={(values, { setSubmitting, resetForm }) => {
+      setSubmitting(true)
+
+      setTimeout(() => {
+        console.log('Successfully submitted form', JSON.stringify(values, null, 2))
+        resetForm()
+        setSubmitting(false)
+      }, 1000)
     }}
   >
-    {({ values, handleChange, handleSubmit }) => (
-      <form onSubmit={handleSubmit}>
+    {({ values, errors, touched, handleChange, handleBlur, handleReset, isSubmitting }) => (
+      <Form>
         {/* TODO delete me later */} {JSON.stringify(values, null, 2)}
-        <div>
+        <section>
           <h3>Contact Information</h3>
           <div>
-            <select name="title" id="title" onChange={handleChange} value={values.title}>
+            <select
+              name="title"
+              id="title"
+              onChange={handleChange}
+              value={values.title}
+              onBlur={handleBlur}
+              className={touched.title && errors.title ? 'has-error' : undefined}
+            >
+              <option disabled>None</option>
               {titles.map((title) => (
-                <option value={title}>{title}</option>
+                <option value={title} key={title}>
+                  {title}
+                </option>
               ))}
             </select>
             <label htmlFor="firstName">First Name</label>
-            <input type="text" name="firstName" id="firstName" onChange={handleChange} value={values.firstName} />
+            <input
+              type="text"
+              name="firstName"
+              id="firstName"
+              placeholder="John"
+              onChange={handleChange}
+              value={values.firstName}
+              onBlur={handleBlur}
+              className={touched.title && errors.title ? 'has-error' : undefined}
+            />
           </div>
           <div>
             <label htmlFor="lastName">Last Name</label>
-            <input type="text" name="lastName" id="lastName" onChange={handleChange} value={values.lastName} />
+            <input
+              type="text"
+              name="lastName"
+              id="lastName"
+              placeholder="Smith"
+              onChange={handleChange}
+              value={values.lastName}
+              onBlur={handleBlur}
+              className={touched.lastName && errors.lastName ? 'has-error' : undefined}
+            />
           </div>
           <div>
             <label htmlFor="accountName">Account Name</label>
-            <input type="text" name="accountName" id="accountName" onChange={handleChange} value={values.accountName} />
+            <input
+              type="text"
+              name="accountName"
+              id="accountName"
+              placeholder="John's Joinery"
+              onChange={handleChange}
+              value={values.accountName}
+              onBlur={handleBlur}
+              className={touched.accountName && errors.accountName ? 'has-error' : undefined}
+            />
           </div>
           <div>
             <label htmlFor="companyName">Company Name (optional)</label>
-            <input type="text" name="companyName" id="companyName" onChange={handleChange} value={values.companyName} />
+            <input
+              type="text"
+              name="companyName"
+              id="companyName"
+              placeholder="John's Joinery"
+              onChange={handleChange}
+              value={values.companyName}
+              onBlur={handleBlur}
+              className={touched.companyName && errors.companyName ? 'has-error' : undefined}
+            />
           </div>
           <div>
+            {/* TODO2 phone & fax with spaces, see mock up */}
             <label htmlFor="phone">Phone</label>
-            <input type="tel" pattern="[0-9]+" name="phone" id="phone" onChange={handleChange} value={values.phone} />
+            <input
+              type="tel"
+              pattern="[0-9]+"
+              name="phone"
+              id="phone"
+              placeholder="0212345678"
+              onChange={handleChange}
+              value={values.phone}
+              onBlur={handleBlur}
+              className={touched.phone && errors.phone ? 'has-error' : undefined}
+            />
           </div>
           <div>
             <label htmlFor="fax">Fax (optional)</label>
-            <input type="tel" pattern="[0-9]+" name="fax" id="fax" onChange={handleChange} value={values.fax} />
+            <input
+              type="tel"
+              pattern="[0-9]+"
+              name="fax"
+              id="fax"
+              placeholder="0287654321"
+              onChange={handleChange}
+              value={values.fax}
+              onBlur={handleBlur}
+              className={touched.fax && errors.fax ? 'has-error' : undefined}
+            />
           </div>
           <div>
             <label htmlFor="jobTitle">Title (optional)</label>
-            <input type="text" name="jobTitle" id="jobTitle" onChange={handleChange} value={values.jobTitle} />
+            <input
+              type="text"
+              name="jobTitle"
+              id="jobTitle"
+              placeholder="Owner"
+              onChange={handleChange}
+              value={values.jobTitle}
+              onBlur={handleBlur}
+              className={touched.jobTitle && errors.jobTitle ? 'has-error' : undefined}
+            />
           </div>
           <div>
             <label htmlFor="email">Email</label>
-            <input type="email" name="email" id="email" onChange={handleChange} value={values.email} />
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="samle@email.com"
+              onChange={handleChange}
+              value={values.email}
+              onBlur={handleBlur}
+              className={touched.email && errors.email ? 'has-error' : undefined}
+            />
           </div>
           <label htmlFor="emailOptOut">Email Opt Out</label>
           <input
@@ -113,9 +204,10 @@ export const Form = () => (
             name="emailOptOut"
             onChange={handleChange}
             checked={values.emailOptOut}
+            onBlur={handleBlur}
           />
-        </div>
-        <div>
+        </section>
+        <section>
           <h3>Address Information</h3>
           <div>
             <label htmlFor="streetNumberAndStreet">Street No. & Street</label>
@@ -123,17 +215,39 @@ export const Form = () => (
               type="text"
               name="streetNumberAndStreet"
               id="streetNumberAndStreet"
+              placeholder="1, Elizabeth Street"
               onChange={handleChange}
               value={values.streetNumberAndStreet}
+              onBlur={handleBlur}
+              className={touched.streetNumberAndStreet && errors.streetNumberAndStreet ? 'has-error' : undefined}
             />
           </div>
           <div>
             <label htmlFor="city">City</label>
-            <input type="text" name="city" id="city" onChange={handleChange} value={values.city} />
+            <input
+              type="text"
+              name="city"
+              id="city"
+              placeholder="Sydney"
+              onChange={handleChange}
+              value={values.city}
+              onBlur={handleBlur}
+              className={touched.city && errors.city ? 'has-error' : undefined}
+            />
           </div>
-          <select name="state" id="state" onChange={handleChange} value={values.state}>
+          <select
+            name="state"
+            id="state"
+            onChange={handleChange}
+            value={values.state}
+            onBlur={handleBlur}
+            className={touched.state && errors.state ? 'has-error' : undefined}
+          >
+            {/* TODO2: search Icon & auto complete */}
             {australianStates.map((state) => (
-              <option value={state}>{state}</option>
+              <option value={state} key={state}>
+                {state}
+              </option>
             ))}
           </select>
           <div>
@@ -143,12 +257,15 @@ export const Form = () => (
               pattern="[0-9]+"
               name="postcode"
               id="postcode"
+              placeholder="2000"
               onChange={handleChange}
               value={values.postcode}
+              onBlur={handleBlur}
+              className={touched.postcode && errors.postcode ? 'has-error' : undefined}
             />
           </div>
-        </div>
-        <div>
+        </section>
+        <section>
           <h3>Description Information</h3>
           <div>
             <label htmlFor="description">Description</label>
@@ -158,13 +275,21 @@ export const Form = () => (
               id="description"
               onChange={handleChange}
               value={values.description}
+              onBlur={handleBlur}
+              className={touched.description && errors.description ? 'has-error' : undefined}
             />
           </div>
-        </div>
+        </section>
         <div>
-          <button type="submit">Save</button>
+          {/* TODO1 move buttons to top toolbar */}
+          <button type="submit" disabled={isSubmitting}>
+            Save
+          </button>
+          <button onClick={handleReset} disabled={isSubmitting}>
+            Reset
+          </button>
         </div>
-      </form>
+      </Form>
     )}
   </Formik>
 )

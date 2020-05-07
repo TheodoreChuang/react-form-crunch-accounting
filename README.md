@@ -39,6 +39,7 @@ Can close modal
 
 ### TO CLARIFY:
 
+- Company Name field: optional or required?
 - For invalid fields, should the UI indicate an error visually (red border) and/or display more details with a text message
 
 ### TODO:

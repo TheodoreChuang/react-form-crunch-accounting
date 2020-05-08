@@ -1,5 +1,5 @@
 import React from 'react'
-import { Formik, Form } from 'formik'
+import { Formik, Form, Field, FieldProps } from 'formik'
 import * as Yup from 'yup'
 
 type ContactFormProps = {
@@ -19,28 +19,29 @@ const australianStates = [
 ]
 
 const ValidationSchema = Yup.object().shape({
-  title: Yup.mixed().oneOf(titles), //.required(),
-  firstName: Yup.string().min(1).max(255), //.required(),
-  lastName: Yup.string().min(1).max(255), //.required(),
-  accountName: Yup.string().min(1).max(255), //.required(),
+  title: Yup.mixed().oneOf(titles).required(),
+  firstName: Yup.string().min(1).max(255).required(),
+  lastName: Yup.string().min(1).max(255).required(),
+  accountName: Yup.string().min(1).max(255).required(),
   companyName: Yup.string().max(255),
   // TODO2 check valid phone formats + add regex?
   phone: Yup.string()
     .min(10)
     .max(12)
-    .matches(/[0-9]+/), //.required(),
+    .matches(/[0-9]+/)
+    .required(),
   fax: Yup.string()
     .min(10)
     .max(12)
     .matches(/[0-9]+/),
   jobTitle: Yup.string().min(1).max(255),
-  email: Yup.string().email().max(255), //.required(),
+  email: Yup.string().email().max(255).required(),
   emailOptOut: Yup.boolean(),
-  streetNumberAndStreet: Yup.string().min(1).max(255), //.required(),
-  city: Yup.string().min(1).max(255), //.required(),
-  state: Yup.mixed().oneOf(australianStates), //.required(),
-  postcode: Yup.number().min(4).max(4), //.required(),
-  description: Yup.string().min(1).max(1000), //.required(),
+  streetNumberAndStreet: Yup.string().min(1).max(255).required(),
+  city: Yup.string().min(1).max(255).required(),
+  state: Yup.mixed().oneOf(australianStates).required(),
+  postcode: Yup.string().min(4).max(4).required(),
+  description: Yup.string().min(1).max(1000).required(),
 })
 
 export const formInitialValues = {
@@ -69,15 +70,16 @@ export const ContactForm = ({ updateContainerFormState, handleModalOpen }: Conta
       setSubmitting(true)
 
       setTimeout(() => {
-        console.log('Successfully submitted form', JSON.stringify(values, null, 2))
         updateContainerFormState(values)
-        resetForm()
         setSubmitting(false)
         handleModalOpen(true)
-      }, 1000)
+        resetForm()
+      }, 700)
     }}
   >
-    {({ values, errors, touched, handleChange, handleBlur, handleReset, isSubmitting }) => (
+    {({ errors, touched, handleReset, isSubmitting }) => (
+      /** These props automatically passed to <Field />: values, handleChange, handleBlur :) */
+      // TODO2 - consider pulling out the form below into its own component. Being able to pass in values, etc will make unit testing easier
       <>
         <div className="form-toolbar">
           <h1 className="form-toolbar-title">Create Contact</h1>
@@ -90,210 +92,178 @@ export const ContactForm = ({ updateContainerFormState, handleModalOpen }: Conta
         </div>
         <Form id="create-contact-form">
           <section>
-            <h3>Contact Information</h3>
-            <div>
-              <select
-                name="title"
-                id="title"
-                onChange={handleChange}
-                value={values.title}
-                onBlur={handleBlur}
-                className={touched.title && errors.title ? 'has-error' : undefined}
+            <h3 className="form-section-title">Contact Information</h3>
+            <div className="input-row">
+              <div className="titleFirstNameInput">
+                <Field
+                  name="title"
+                  id="title"
+                  as="select"
+                  className={touched.title && errors.title ? 'has-error' : undefined}
+                  style={{ gridArea: 'title' }}
+                >
+                  <option disabled>None</option>
+                  {titles.map((title) => (
+                    <option value={title} key={title}>
+                      {title}
+                    </option>
+                  ))}
+                </Field>
+                <label htmlFor="firstName" style={{ gridArea: 'label' }}>
+                  First Name
+                </label>
+                <Field
+                  name="firstName"
+                  id="firstName"
+                  placeholder="John"
+                  className={touched.firstName && errors.firstName ? 'has-error' : undefined}
+                  style={{ gridArea: 'firstName' }}
+                />
+              </div>
+              <div>
+                <label htmlFor="lastName">Last Name</label>
+                <Field
+                  name="lastName"
+                  id="lastName"
+                  placeholder="Smith"
+                  className={touched.lastName && errors.lastName ? 'has-error' : undefined}
+                />
+              </div>
+            </div>
+            <div className="input-row">
+              <div>
+                <label htmlFor="accountName">Account Name</label>
+                <Field
+                  name="accountName"
+                  id="accountName"
+                  placeholder="John's Joinery"
+                  className={touched.accountName && errors.accountName ? 'has-error' : undefined}
+                />
+              </div>
+              <div>
+                <label htmlFor="companyName">Company Name (optional)</label>
+                <Field
+                  name="companyName"
+                  id="companyName"
+                  placeholder="John's Joinery"
+                  className={touched.companyName && errors.companyName ? 'has-error' : undefined}
+                />
+              </div>
+            </div>
+            <div className="input-row">
+              <div>
+                {/* TODO2 phone & fax with spaces, see mock up */}
+                <label htmlFor="phone">Phone</label>
+                <Field
+                  type="tel"
+                  pattern="[0-9]+"
+                  name="phone"
+                  id="phone"
+                  placeholder="0212345678"
+                  className={touched.phone && errors.phone ? 'has-error' : undefined}
+                />
+              </div>
+              <div>
+                <label htmlFor="fax">Fax (optional)</label>
+                <Field
+                  type="tel"
+                  pattern="[0-9]+"
+                  name="fax"
+                  id="fax"
+                  placeholder="0287654321"
+                  className={touched.fax && errors.fax ? 'has-error' : undefined}
+                />
+              </div>
+            </div>
+            <div className="input-row">
+              <div>
+                <label htmlFor="jobTitle">Title (optional)</label>
+                <Field
+                  name="jobTitle"
+                  id="jobTitle"
+                  placeholder="Owner"
+                  className={touched.jobTitle && errors.jobTitle ? 'has-error' : undefined}
+                />
+              </div>
+              <div>
+                <label htmlFor="email">Email</label>
+                <Field
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="samle@email.com"
+                  className={touched.email && errors.email ? 'has-error' : undefined}
+                />
+              </div>
+            </div>
+            <div className="checkbox-input">
+              <label htmlFor="emailOptOut">Email Opt Out</label>
+              <Field type="checkbox" id="emailOptOut" name="emailOptOut" />
+            </div>
+          </section>
+          <section>
+            <h3 className="form-section-title">Address Information</h3>
+            <div className="input-row">
+              <div>
+                <label htmlFor="streetNumberAndStreet">Street No. & Street</label>
+                <Field
+                  name="streetNumberAndStreet"
+                  id="streetNumberAndStreet"
+                  placeholder="1, Elizabeth Street"
+                  className={touched.streetNumberAndStreet && errors.streetNumberAndStreet ? 'has-error' : undefined}
+                />
+              </div>
+              <div>
+                <label htmlFor="city">City</label>
+                <Field
+                  name="city"
+                  id="city"
+                  placeholder="Sydney"
+                  className={touched.city && errors.city ? 'has-error' : undefined}
+                />
+              </div>
+            </div>
+            <div className="input-row">
+              <Field
+                name="state"
+                id="state"
+                as="select"
+                className={`selector-state ${touched.state && errors.state ? 'has-error' : undefined}`}
               >
-                <option disabled>None</option>
-                {titles.map((title) => (
-                  <option value={title} key={title}>
-                    {title}
+                {/* TODO1: select error is finicky. fix or TODO2*/}
+                {/* TODO2: confirm if dropdown or search bar + icon. auto completed? */}
+                {australianStates.map((state) => (
+                  <option value={state} key={state}>
+                    {state}
                   </option>
                 ))}
-              </select>
-              <label htmlFor="firstName">First Name</label>
-              <input
-                type="text"
-                name="firstName"
-                id="firstName"
-                placeholder="John"
-                onChange={handleChange}
-                value={values.firstName}
-                onBlur={handleBlur}
-                className={touched.title && errors.title ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                type="text"
-                name="lastName"
-                id="lastName"
-                placeholder="Smith"
-                onChange={handleChange}
-                value={values.lastName}
-                onBlur={handleBlur}
-                className={touched.lastName && errors.lastName ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              <label htmlFor="accountName">Account Name</label>
-              <input
-                type="text"
-                name="accountName"
-                id="accountName"
-                placeholder="John's Joinery"
-                onChange={handleChange}
-                value={values.accountName}
-                onBlur={handleBlur}
-                className={touched.accountName && errors.accountName ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              <label htmlFor="companyName">Company Name (optional)</label>
-              <input
-                type="text"
-                name="companyName"
-                id="companyName"
-                placeholder="John's Joinery"
-                onChange={handleChange}
-                value={values.companyName}
-                onBlur={handleBlur}
-                className={touched.companyName && errors.companyName ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              {/* TODO2 phone & fax with spaces, see mock up */}
-              <label htmlFor="phone">Phone</label>
-              <input
-                type="tel"
-                pattern="[0-9]+"
-                name="phone"
-                id="phone"
-                placeholder="0212345678"
-                onChange={handleChange}
-                value={values.phone}
-                onBlur={handleBlur}
-                className={touched.phone && errors.phone ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              <label htmlFor="fax">Fax (optional)</label>
-              <input
-                type="tel"
-                pattern="[0-9]+"
-                name="fax"
-                id="fax"
-                placeholder="0287654321"
-                onChange={handleChange}
-                value={values.fax}
-                onBlur={handleBlur}
-                className={touched.fax && errors.fax ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              <label htmlFor="jobTitle">Title (optional)</label>
-              <input
-                type="text"
-                name="jobTitle"
-                id="jobTitle"
-                placeholder="Owner"
-                onChange={handleChange}
-                value={values.jobTitle}
-                onBlur={handleBlur}
-                className={touched.jobTitle && errors.jobTitle ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                name="email"
-                id="email"
-                placeholder="samle@email.com"
-                onChange={handleChange}
-                value={values.email}
-                onBlur={handleBlur}
-                className={touched.email && errors.email ? 'has-error' : undefined}
-              />
-            </div>
-            <label htmlFor="emailOptOut">Email Opt Out</label>
-            <input
-              type="checkbox"
-              id="emailOptOut"
-              name="emailOptOut"
-              onChange={handleChange}
-              checked={values.emailOptOut}
-              onBlur={handleBlur}
-            />
-          </section>
-          <section>
-            <h3>Address Information</h3>
-            <div>
-              <label htmlFor="streetNumberAndStreet">Street No. & Street</label>
-              <input
-                type="text"
-                name="streetNumberAndStreet"
-                id="streetNumberAndStreet"
-                placeholder="1, Elizabeth Street"
-                onChange={handleChange}
-                value={values.streetNumberAndStreet}
-                onBlur={handleBlur}
-                className={touched.streetNumberAndStreet && errors.streetNumberAndStreet ? 'has-error' : undefined}
-              />
-            </div>
-            <div>
-              <label htmlFor="city">City</label>
-              <input
-                type="text"
-                name="city"
-                id="city"
-                placeholder="Sydney"
-                onChange={handleChange}
-                value={values.city}
-                onBlur={handleBlur}
-                className={touched.city && errors.city ? 'has-error' : undefined}
-              />
-            </div>
-            <select
-              name="state"
-              id="state"
-              onChange={handleChange}
-              value={values.state}
-              onBlur={handleBlur}
-              className={touched.state && errors.state ? 'has-error' : undefined}
-            >
-              {/* TODO2: search Icon & auto complete */}
-              {australianStates.map((state) => (
-                <option value={state} key={state}>
-                  {state}
-                </option>
-              ))}
-            </select>
-            <div>
-              <label htmlFor="postcode">Postcode</label>
-              <input
-                type="text"
-                pattern="[0-9]+"
-                name="postcode"
-                id="postcode"
-                placeholder="2000"
-                onChange={handleChange}
-                value={values.postcode}
-                onBlur={handleBlur}
-                className={touched.postcode && errors.postcode ? 'has-error' : undefined}
-              />
+              </Field>
+              <div>
+                <label htmlFor="postcode">Postcode</label>
+                <Field
+                  pattern="[0-9]+"
+                  name="postcode"
+                  id="postcode"
+                  placeholder="2000"
+                  className={touched.postcode && errors.postcode ? 'has-error' : undefined}
+                />
+              </div>
             </div>
           </section>
           <section>
-            <h3>Description Information</h3>
+            <h3 className="form-section-title">Description Information</h3>
             <div>
               <label htmlFor="description">Description</label>
-              <input
-                type="textarea"
-                name="description"
-                id="description"
-                onChange={handleChange}
-                value={values.description}
-                onBlur={handleBlur}
-                className={touched.description && errors.description ? 'has-error' : undefined}
-              />
+              <Field name="description" id="description">
+                {({ field }: FieldProps) => (
+                  <textarea
+                    rows={10}
+                    style={{ width: '100%', padding: '5px' }}
+                    {...field}
+                    className={touched.description && errors.description ? 'has-error' : undefined}
+                  />
+                )}
+              </Field>
             </div>
           </section>
         </Form>

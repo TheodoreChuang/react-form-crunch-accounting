@@ -1,12 +1,22 @@
 # Crunch Accounting
 
-User Story: As an accountant, I would like to record the details of a new client so that I quickly retrieve those details and contact them when required.
-
 ## App
 
-- built with React
-- needs to be responsive
-  Unit Test (Jest, react-testing-library)
+User Story: As an accountant, I would like to record the details of a new client so that I quickly retrieve those details and contact them when required.
+
+### Acceptance Criteria:
+
+- Create Contact Form:
+  - fields per specs
+  - validation on fields
+  - only able to save if all fields are valid
+    - pops up modal
+    - assumed form to be reset
+  - can cancel/reset form
+- Modal
+  - (pops up after valid form save)
+  - can close
+- App needs to be responsive
 
 ### Components:
 
@@ -21,36 +31,29 @@ Hierarchy:
     - Modal
   - Footer
 
-Form Input Types:
-
-- DropDown (title, States)
-- Text (valid email, valid phone, valid postal code)
-- Textarea
-- Checkbox
-
-Validation per field
-
-Cancel clears form
-Save form, IF all field valid, then confirmation modal
-
-Confirmation Modal (similar layout as form)
-Can close modal
-
 ### TO CLARIFY:
 
-- Company Name field: optional or required?
+- Company Name field: optional or required? (discrepancy between mock up and spec)
+- State field: should be dropdown or text input (discrepancy between mock up and spec)
 - For invalid fields, should the UI indicate an error visually (red border) and/or display more details with a text message
 
 ### TODO:
 
-- what's left TBD
+- lots of styling (alignment, spacing, colors, select field)
+- form
+  - better form validation (phone numbers)
+  - error icon (!)
+- finish modal or hide with feature flag until complete
+- unit test (Jest, react-testing-library)
+- better favicon (transparent background)
 
 ### Future Considerations:
 
 - standardize lint rules (eslint/prettier)
-- pre-commit hooks (husky)
-- deployment (AWS S3)
+- pre-commit hooks for lint and tests? (husky)
+- plan for deployment (AWS S3)
 - CI/CD (Terraform + Circle CI?)
+- css/styling strategy if app is expected to grow
 
 ### External Dependencies:
 
@@ -58,11 +61,20 @@ Can close modal
 
 ---
 
+## Running this project for the first time?
+
+in your terminal:
+
+```console
+git clone git@github.com:TheodoreChuang/react-form-crunch-accounting.git
+cd react-form-crunch-accounting
+npm i
+npm start
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
-
-First time? `npm install`
 
 ### `npm start`
 
